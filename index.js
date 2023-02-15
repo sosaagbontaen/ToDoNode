@@ -13,7 +13,6 @@ app.use("/static", express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
 //connection to db
-//mongoose.set("useFindAndModify", false);
 mongoose.set('strictQuery', false)
 mongoose.connect(process.env.DB_CONNECT, { useNewUrlParser: true }, () => {
 console.log("Connected to db!");
@@ -23,33 +22,40 @@ app.listen(3000, () => console.log("Server Up and running"));
 
 app.set("view engine", "ejs");
 
+//SOFTWARE CONCEPT : HTTP METHODS
 // GET METHOD
 app.get("/", (req, res) => {
     TodoTask.find({}, (err, tasks) => {
+        //SOFTWARE CONCEPT : REUSABLE COMPONENTS (RENDERING HTML TEMPLATES)
         res.render("todo.ejs", { todoTasks: tasks });
     });
 });
-    
+
+//SOFTWARE CONCEPT : HTTP METHODS
 //POST METHOD
+//SOFTWARE CONCEPT : ASYNCHRONOUS REQUESTS
 app.post("/", async (req, res) => {
     
     const todoTask = new TodoTask({
         content: req.body.content
     });
+    //SOFTWARE CONCEPT : ERROR-HANDLING
     try {
         await todoTask.save();
         console.log(req.body);
         res.redirect("/");
     } catch (err) {
-        console.log("nah dawg, modify your code");
+        console.log("An error occured. Could not save task.");
         res.redirect("/");
     }
     });
 
+//SOFTWARE CONCEPT : ROUTING
 //UPDATE
 app.route("/edit/:id").get((req, res) => {
     const id = req.params.id;
     TodoTask.find({}, (err, tasks) => {
+        //SOFTWARE CONCEPT : REUSABLE COMPONENTS (RENDERING HTML TEMPLATES)
         res.render("todoEdit.ejs", { todoTasks: tasks, idTask: id });
     });
 }).post((req, res) => {
@@ -60,6 +66,7 @@ app.route("/edit/:id").get((req, res) => {
     });
 });
 
+//SOFTWARE CONCEPT : ROUTING
 //DELETE
 app.route("/remove/:id").get((req, res) => {
     const id = req.params.id;
